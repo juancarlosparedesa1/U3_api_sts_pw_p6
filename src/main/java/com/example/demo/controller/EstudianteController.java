@@ -26,8 +26,11 @@ public class EstudianteController {
 
 	// cudr orden jerarquico
 
-	// URL BASICO:http://localhost:8080/API/v1.0/Matricula/estudiantes/guardar
-	@PostMapping(path = "/guardar")
+	//*******INGRESAR************
+	// URL NIVEL0:http://localhost:8080/API/v1.0/Matricula/estudiantes/guardar
+	// URL NIVEL1:http://localhost:8080/API/v1.0/Matricula/estudiantes
+	//@PostMapping(path = "/guardar") //NIVEL0
+	@PostMapping
 	public void guardar(@RequestBody Estudiante estudiante) {// capacidades
 		// comento porque estos verbos utilizan en @RequestBody
 		/*
@@ -38,9 +41,13 @@ public class EstudianteController {
 		this.estudianteService.ingresar(estudiante);
 	}
 
-	// URL BASICO:http://localhost:8080/API/v1.0/Matricula/estudiantes/actualizar
-	@PutMapping(path = "/actualizar")
-	public void actualizar(@RequestBody Estudiante estudiante) {
+	//*******ACTUALIZAR************
+	// URL BASICO NIVEL 0:http://localhost:8080/API/v1.0/Matricula/estudiantes/actualizar
+	// URL NIVEL 1:http://localhost:8080/API/v1.0/Matricula/estudiantes/1
+	//@PutMapping(path = "/actualizar")
+	@PutMapping("/{id}")
+	public void actualizar(@RequestBody Estudiante estudiante,@PathVariable Integer id) {
+		estudiante.setId(id);//NIVEL 1 EL ID YA NO VIENE EN EL BODY COMO NIVEL 0
 		/*
 		 * Estudiante estu = this.estudianteService.buscar(1);
 		 * estu.setNombre("Jose David"); estu.setApellido("Garcia");
@@ -50,10 +57,14 @@ public class EstudianteController {
 		this.estudianteService.actualizar(estudiante);
 	}
 
-	// URL
-	// BASICO:http://localhost:8080/API/v1.0/Matricula/estudiantes/actualizarParcial
-	@PatchMapping(path = "/actualizarParcial")
-	public void actualizaParcial(@RequestBody Estudiante estudiante) {
+	
+	//*******ACTUALIZARPARCIAL PATCH************
+	// URL BASICO NIVEL 0:http://localhost:8080/API/v1.0/Matricula/estudiantes/actualizarParcial
+	// URL NIVEL 1:http://localhost:8080/API/v1.0/Matricula/estudiantes/1
+	//@PatchMapping(path = "/actualizarParcial") //NIVEL 0
+	@PatchMapping(path = "/{id}")//NIVEL 1
+	public void actualizaParcial(@RequestBody Estudiante estudiante,@PathVariable Integer id) {
+		estudiante.setId(id);//seteado en el atributo
 		// COMENTO POR QUE VOY A USAR EL REQUESTBODY
 		/*
 		 * Estudiante estu = this.estudianteService.buscar(1);
@@ -80,6 +91,8 @@ public class EstudianteController {
 		this.estudianteService.actualizar(estudiante2);
 	}
 
+//	**********BORRAR***************
+	//URL NIVEL 0
 	// URL BASICO:http://localhost:8080/API/v1.0/Matricula/estudiantes/borrar
 	// URL BASICO PATH
 	// VARIABLE:http://localhost:8080/API/v1.0/Matricula/estudiantes/borrar/1
@@ -89,8 +102,11 @@ public class EstudianteController {
 	// VARIABLE:http://localhost:8080/API/v1.0/Matricula/estudiantes/borrar/3
 	// URL BASICO PATH
 	// VARIABLE:http://localhost:8080/API/v1.0/Matricula/estudiantes/borrar/4
-
-	@DeleteMapping(path = "/borrar/{id}")
+	
+	
+	//URL NIVEL 1:http://localhost:8080/API/v1.0/Matricula/estudiantes/3
+//	@DeleteMapping(path = "/borrar/{id}") //NIVEL 0
+	@DeleteMapping(path = "/{id}")  // NIVEL 1
 	public void borrar(@PathVariable Integer id) {
 		// comento porque esto es basico y no es correcto hacerlo asi debe ser
 		// variaalbel el path
@@ -98,6 +114,8 @@ public class EstudianteController {
 		this.estudianteService.borrar(id);
 	}
 
+	//*************BUSCAR*************
+	//URL NIVEL 0
 	// URL BASICO:http://localhost:8080/API/v1.0/Matricula/estudiantes/buscar
 	// URL
 	// PATHVARIABLE:http://localhost:8080/API/v1.0/Matricula/estudiantes/buscar/1
@@ -107,7 +125,11 @@ public class EstudianteController {
 	// PATHVARIABLE:http://localhost:8080/API/v1.0/Matricula/estudiantes/buscar/3
 	// URL
 	// PATHVARIABLE:http://localhost:8080/API/v1.0/Matricula/estudiantes/buscar/3/nuevo----funiciona
-	@GetMapping(path = "/buscar/{id}")
+	
+	
+	//URL NIVEL 1:http://localhost:8080/API/v1.0/Matricula/estudiantes/1
+//	@GetMapping(path = "/buscar/{id}") //NIVEL 0
+	@GetMapping(path = "/{id}")  //NIVEL 1
 	public Estudiante buscar(@PathVariable Integer id) {
 		return this.estudianteService.buscar(id);
 	}
