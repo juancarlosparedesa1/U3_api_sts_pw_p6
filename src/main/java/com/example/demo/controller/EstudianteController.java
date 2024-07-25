@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -26,12 +27,14 @@ public class EstudianteController {
 
 	// cudr orden jerarquico
 
-	//*******INGRESAR************
+	// *******GUARDAR************
 	// URL NIVEL0:http://localhost:8080/API/v1.0/Matricula/estudiantes/guardar
 	// URL NIVEL1:http://localhost:8080/API/v1.0/Matricula/estudiantes
-	//@PostMapping(path = "/guardar") //NIVEL0
-	@PostMapping
-	public void guardar(@RequestBody Estudiante estudiante) {// capacidades
+	// @PostMapping(path = "/guardar") //NIVEL0
+	@PostMapping // NIVEL 1
+//	public void guardar(@RequestBody Estudiante estudiante) {// capacidades
+	public ResponseEntity<Estudiante> guardar(@RequestBody Estudiante estudiante) {// capacidades-codigos personalizados
+																					// RE
 		// comento porque estos verbos utilizan en @RequestBody
 		/*
 		 * Estudiante estu = new Estudiante(); estu.setNombre("Juan Carlos");
@@ -39,15 +42,19 @@ public class EstudianteController {
 		 * 05, 10, 0, 0)); estu.setGenero("M");
 		 */
 		this.estudianteService.ingresar(estudiante);
+		return ResponseEntity.status(201).body(estudiante);
 	}
 
-	//*******ACTUALIZAR************
-	// URL BASICO NIVEL 0:http://localhost:8080/API/v1.0/Matricula/estudiantes/actualizar
+	// *******ACTUALIZAR************
+	// URL BASICO NIVEL
+	// 0:http://localhost:8080/API/v1.0/Matricula/estudiantes/actualizar
 	// URL NIVEL 1:http://localhost:8080/API/v1.0/Matricula/estudiantes/1
-	//@PutMapping(path = "/actualizar")
+	// @PutMapping(path = "/actualizar")
 	@PutMapping("/{id}")
-	public void actualizar(@RequestBody Estudiante estudiante,@PathVariable Integer id) {
-		estudiante.setId(id);//NIVEL 1 EL ID YA NO VIENE EN EL BODY COMO NIVEL 0
+//	public void actualizar(@RequestBody Estudiante estudiante, @PathVariable Integer id) {
+	public ResponseEntity<Estudiante> actualizar(@RequestBody Estudiante estudiante, @PathVariable Integer id) {// capacidades-codigos
+																												// personalizados
+		estudiante.setId(id);// NIVEL 1 EL ID YA NO VIENE EN EL BODY COMO NIVEL 0
 		/*
 		 * Estudiante estu = this.estudianteService.buscar(1);
 		 * estu.setNombre("Jose David"); estu.setApellido("Garcia");
@@ -55,16 +62,18 @@ public class EstudianteController {
 		 * estu.setGenero("M");
 		 */
 		this.estudianteService.actualizar(estudiante);
+		return ResponseEntity.status(238).body(estudiante);
 	}
 
-	
-	//*******ACTUALIZARPARCIAL PATCH************
-	// URL BASICO NIVEL 0:http://localhost:8080/API/v1.0/Matricula/estudiantes/actualizarParcial
+	// *******ACTUALIZARPARCIAL PATCH************
+	// URL BASICO NIVEL
+	// 0:http://localhost:8080/API/v1.0/Matricula/estudiantes/actualizarParcial
 	// URL NIVEL 1:http://localhost:8080/API/v1.0/Matricula/estudiantes/1
-	//@PatchMapping(path = "/actualizarParcial") //NIVEL 0
-	@PatchMapping(path = "/{id}")//NIVEL 1
-	public void actualizaParcial(@RequestBody Estudiante estudiante,@PathVariable Integer id) {
-		estudiante.setId(id);//seteado en el atributo
+	// @PatchMapping(path = "/actualizarParcial") //NIVEL 0
+	@PatchMapping(path = "/{id}") // NIVEL 1
+//	public void actualizaParcial(@RequestBody Estudiante estudiante, @PathVariable Integer id) {
+	public ResponseEntity<Estudiante> actualizaParcial(@RequestBody Estudiante estudiante, @PathVariable Integer id) {
+		estudiante.setId(id);// seteado en el atributo
 		// COMENTO POR QUE VOY A USAR EL REQUESTBODY
 		/*
 		 * Estudiante estu = this.estudianteService.buscar(1);
@@ -89,10 +98,11 @@ public class EstudianteController {
 			estudiante2.setGenero(estudiante.getGenero());
 		}
 		this.estudianteService.actualizar(estudiante2);
+		return ResponseEntity.status(239).body(estudiante2);
 	}
 
 //	**********BORRAR***************
-	//URL NIVEL 0
+	// URL NIVEL 0
 	// URL BASICO:http://localhost:8080/API/v1.0/Matricula/estudiantes/borrar
 	// URL BASICO PATH
 	// VARIABLE:http://localhost:8080/API/v1.0/Matricula/estudiantes/borrar/1
@@ -102,20 +112,21 @@ public class EstudianteController {
 	// VARIABLE:http://localhost:8080/API/v1.0/Matricula/estudiantes/borrar/3
 	// URL BASICO PATH
 	// VARIABLE:http://localhost:8080/API/v1.0/Matricula/estudiantes/borrar/4
-	
-	
-	//URL NIVEL 1:http://localhost:8080/API/v1.0/Matricula/estudiantes/3
+
+	// URL NIVEL 1:http://localhost:8080/API/v1.0/Matricula/estudiantes/3
 //	@DeleteMapping(path = "/borrar/{id}") //NIVEL 0
-	@DeleteMapping(path = "/{id}")  // NIVEL 1
-	public void borrar(@PathVariable Integer id) {
+	@DeleteMapping(path = "/{id}") // NIVEL 1
+//	public void borrar(@PathVariable Integer id) {
+	public ResponseEntity<String> borrar(@PathVariable Integer id) {// capacidad-codigos personalizados
 		// comento porque esto es basico y no es correcto hacerlo asi debe ser
 		// variaalbel el path
 		// this.estudianteService.borrar(1);
 		this.estudianteService.borrar(id);
+		return ResponseEntity.status(240).body("Estudiante borrado!");
 	}
 
-	//*************BUSCAR*************
-	//URL NIVEL 0
+	// *************BUSCAR*************
+	// URL NIVEL 0
 	// URL BASICO:http://localhost:8080/API/v1.0/Matricula/estudiantes/buscar
 	// URL
 	// PATHVARIABLE:http://localhost:8080/API/v1.0/Matricula/estudiantes/buscar/1
@@ -125,26 +136,50 @@ public class EstudianteController {
 	// PATHVARIABLE:http://localhost:8080/API/v1.0/Matricula/estudiantes/buscar/3
 	// URL
 	// PATHVARIABLE:http://localhost:8080/API/v1.0/Matricula/estudiantes/buscar/3/nuevo----funiciona
-	
-	
-	//URL NIVEL 1:http://localhost:8080/API/v1.0/Matricula/estudiantes/1
+
+	// URL NIVEL 1:http://localhost:8080/API/v1.0/Matricula/estudiantes/1
 //	@GetMapping(path = "/buscar/{id}") //NIVEL 0
-	@GetMapping(path = "/{id}")  //NIVEL 1
-	public Estudiante buscar(@PathVariable Integer id) {
-		return this.estudianteService.buscar(id);
+	@GetMapping(path = "/{id}") // NIVEL 1
+//	public Estudiante buscarPorId(@PathVariable Integer id) {
+	public ResponseEntity<Estudiante> buscarPorId(@PathVariable Integer id) {//capaciadad-codigos personalizados
+		return ResponseEntity.status(236).body(this.estudianteService.buscar(id));
 	}
 
+	// *****************BUSCAR POR GENERO**********
 	// MÉTODO PARA FILTRAR ESTUDIANTES POR GENERO FEMENINO
-	// URL:http://localhost:8080/API/v1.0/Matricula/estudiantes/buscarPorGenero?genero=F
+	// URL NIVEL
+	// 0:http://localhost:8080/API/v1.0/Matricula/estudiantes/buscarPorGenero?genero=F
+	// URL NIVEL
+	// 1:http://localhost:8080/API/v1.0/Matricula/estudiantes/genero?genero=F
 	// MÉTODO PARA FILTRAR ESTUDIANTES POR GENERO FEMENINO
-	// URL:http://localhost:8080/API/v1.0/Matricula/estudiantes/buscarPorGenero?genero=M
-	@GetMapping(path = "/buscarPorGenero")
+	// URL NIVEL
+	// 0:http://localhost:8080/API/v1.0/Matricula/estudiantes/buscarPorGenero?genero=M
+	// URL NIVEL
+	// 1:http://localhost:8080/API/v1.0/Matricula/estudiantes/genero?genero=M
+//	@GetMapping(path = "/buscarPorGenero")//NIVEL 0
+	@GetMapping(path = "/genero") // NIVEL 1
 	public List<Estudiante> buscarPorGenero(@RequestParam String genero) {
 		List<Estudiante> lista = this.estudianteService.buscarPorGenero(genero);
 		return lista;
 	}
 
-	// NO SON COMUNES PERO ES BUENO CONOCERLO
+	// buscarMixto
+	// URL NIVEL
+	// 0:http://localhost:8080/API/v1.0/Matricula/estudiantes/buscarMixto/1?prueba=?indica
+	// requestaParam
+	// URL NIVEL
+	// 1:http://localhost:8080/API/v1.0/Matricula/estudiantes/prueba/1?prueba=?indica
+	// requestaParam
+//	@GetMapping("/buscarMixto/{id}")
+	@GetMapping("/prueba/{id}")
+	public Estudiante buscarMixto(@PathVariable Integer id, @RequestParam String prueba) {
+
+		System.out.println("Dato: " + id);
+		System.out.println("Dato: " + prueba);
+		return this.estudianteService.buscar(id);
+	}
+
+	// NO SON COMUNES PERO ES BUENO CONOCERLO (falta el nivel 1)
 	// METODO PARA PROBAR VARIOS PATHVARIABLES
 	// URL
 	// PATHVARIABLE:http://localhost:8080/API/v1.0/Matricula/estudiantes/buscartest/3/hola
