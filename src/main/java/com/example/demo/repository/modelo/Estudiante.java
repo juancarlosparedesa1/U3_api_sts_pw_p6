@@ -1,17 +1,22 @@
 package com.example.demo.repository.modelo;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "estudiante")
+@JsonIgnoreProperties(value = "materias")
 public class Estudiante {
 
 	@Id
@@ -26,10 +31,15 @@ public class Estudiante {
 	private String nombre;
 	@Column(name = "estu_apellido")
 	private String apellido;
-	@Column(name = "estu_fecha_nacimiento")
-	private LocalDateTime fechaNacimiento;
+//	@Column(name = "estu_fecha_nacimiento")
+//	private LocalDateTime fechaNacimiento;
+	@Column(name = "estu_carrera")
+	private String carrera;
 	@Column(name = "estu_genero")
 	private String genero;
+
+	@OneToMany(mappedBy = "estudiante")
+	private List<Materia> materias;
 
 	// SET Y GET
 
@@ -57,13 +67,13 @@ public class Estudiante {
 		this.apellido = apellido;
 	}
 
-	public LocalDateTime getFechaNacimiento() {
-		return fechaNacimiento;
-	}
-
-	public void setFechaNacimiento(LocalDateTime fechaNacimiento) {
-		this.fechaNacimiento = fechaNacimiento;
-	}
+//	public LocalDateTime getFechaNacimiento() {
+//		return fechaNacimiento;
+//	}
+//
+//	public void setFechaNacimiento(LocalDateTime fechaNacimiento) {
+//		this.fechaNacimiento = fechaNacimiento;
+//	}
 
 	public String getGenero() {
 		return genero;
@@ -71,6 +81,22 @@ public class Estudiante {
 
 	public void setGenero(String genero) {
 		this.genero = genero;
+	}
+
+	public String getCarrera() {
+		return carrera;
+	}
+
+	public void setCarrera(String carrera) {
+		this.carrera = carrera;
+	}
+
+	public List<Materia> getMaterias() {
+		return materias;
+	}
+
+	public void setMaterias(List<Materia> materias) {
+		this.materias = materias;
 	}
 
 }

@@ -1,8 +1,15 @@
 package com.example.demo.controller;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.repository.modelo.Estudiante;
 import com.example.demo.service.IEstudianteService;
+import com.example.demo.service.IMateriaService;
+import com.example.demo.service.to.EstudianteTO;
+import com.example.demo.service.to.MateriaTO;
 
 @RestController
 @RequestMapping(path = "/estudiantes")
@@ -24,6 +34,8 @@ public class EstudianteController {
 
 	@Autowired
 	private IEstudianteService estudianteService;
+	@Autowired
+	private IMateriaService materiaService;
 
 	// cudr orden jerarquico
 
@@ -31,18 +43,25 @@ public class EstudianteController {
 	// URL NIVEL0:http://localhost:8080/API/v1.0/Matricula/estudiantes/guardar
 	// URL NIVEL1:http://localhost:8080/API/v1.0/Matricula/estudiantes
 	// @PostMapping(path = "/guardar") //NIVEL0
-	@PostMapping // NIVEL 1
+//	@PostMapping() // NIVEL 1
+	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE) // MEDIATYPE
 //	public void guardar(@RequestBody Estudiante estudiante) {// capacidades
-	public ResponseEntity<Estudiante> guardar(@RequestBody Estudiante estudiante) {// capacidades-codigos personalizados
-																					// RE
+	// public ResponseEntity<Estudiante> guardar(@RequestBody Estudiante estudiante)
+	// {// capacidades-codigos personalizados
+//	public ResponseEntity<Estudiante> guardar(@RequestBody Estudiante estudiante) {// MEDIATYPE
+	public ResponseEntity<EstudianteTO> guardar(@RequestBody EstudianteTO estudianteTo) {// hateoas
+
+		// RE
 		// comento porque estos verbos utilizan en @RequestBody
 		/*
 		 * Estudiante estu = new Estudiante(); estu.setNombre("Juan Carlos");
 		 * estu.setApellido("Paredes"); estu.setFechaNacimiento(LocalDateTime.of(1999,
 		 * 05, 10, 0, 0)); estu.setGenero("M");
 		 */
-		this.estudianteService.ingresar(estudiante);
-		return ResponseEntity.status(201).body(estudiante);
+		// CONTRUIMOS CABECERAS
+//		HttpHeaders 
+		this.estudianteService.ingresar(estudianteTo);
+		return ResponseEntity.status(HttpStatus.CREATED).body(estudianteTo);
 	}
 
 	// *******ACTUALIZAR************
@@ -91,8 +110,11 @@ public class EstudianteController {
 		if (estudiante.getApellido() != null) {
 			estudiante2.setApellido(estudiante.getApellido());
 		}
-		if (estudiante.getFechaNacimiento() != null) {
-			estudiante2.setFechaNacimiento(estudiante.getFechaNacimiento());
+//		if (estudiante.getFechaNacimiento() != null) {
+//			estudiante2.setFechaNacimiento(estudiante.getFechaNacimiento());
+//		}
+		if (estudiante.getCarrera() != null) {
+			estudiante2.setCarrera(estudiante.getCarrera());
 		}
 		if (estudiante.getGenero() != null) {
 			estudiante2.setGenero(estudiante.getGenero());
@@ -125,7 +147,7 @@ public class EstudianteController {
 		return ResponseEntity.status(240).body("Estudiante borrado!");
 	}
 
-	// *************BUSCAR*************
+	// *************BUSCAR*************GET
 	// URL NIVEL 0
 	// URL BASICO:http://localhost:8080/API/v1.0/Matricula/estudiantes/buscar
 	// URL
@@ -139,10 +161,20 @@ public class EstudianteController {
 
 	// URL NIVEL 1:http://localhost:8080/API/v1.0/Matricula/estudiantes/1
 //	@GetMapping(path = "/buscar/{id}") //NIVEL 0
-	@GetMapping(path = "/{id}") // NIVEL 1
+//  @GetMapping(path = "/{id}") // NIVEL 1
+	@GetMapping(path = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE) // NIVEL 2 mediatype
+
 //	public Estudiante buscarPorId(@PathVariable Integer id) {
-	public ResponseEntity<Estudiante> buscarPorId(@PathVariable Integer id) {//capaciadad-codigos personalizados
-		return ResponseEntity.status(236).body(this.estudianteService.buscar(id));
+	public ResponseEntity<Estudiante> buscarPorId(@PathVariable Integer id) {// capaciadad-codigos personalizados
+
+		// CONTRUIMOS CABECERAS
+		HttpHeaders cabeceras = new HttpHeaders();
+		cabeceras.add("Mensaje_236", "Corresponde a la consulta de un recurso");
+		// AGREGRO MAS CABECERAS
+		cabeceras.add("Clave", "Estudiante Encontrado");
+//		return ResponseEntity.status(236).body(this.estudianteService.buscar(id));//metodo estatico
+		return new ResponseEntity<>(this.estudianteService.buscar(id), cabeceras, 236);// metodo generico
+
 	}
 
 	// *****************BUSCAR POR GENERO**********
@@ -198,6 +230,79 @@ public class EstudianteController {
 		System.out.println("Edad:" + edad);
 		List<Estudiante> lista = this.estudianteService.buscarPorGenero(genero);
 		return lista;
+	}
+
+	// MEDIATYPE EJEMPLOS
+	// NO SE RECOMIENDA PORQUE ES UN TEXTO CUALQUIERA
+	// UN HTML EN APIS TAMPOCO EL HTML
+	/// URL: http://localhost:8080/API/v1.0/Matricula/estudiantes/texto/plano
+	@GetMapping("/texto/plano")
+	public String prueba() {
+		String prueba = "texto de prueba";
+		return prueba;
+	}
+
+	// HATEOAS
+	// excepciones /hateoas/{id} solo si hay choques de endpoints
+//	URL: http://localhost:8080/API/v1.0/Matricula/estudiantes/hateoas/1
+	@GetMapping(path = "/hateoas/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public EstudianteTO buscarhateoas(@PathVariable Integer id) {
+		// consulto el estudiante por id
+		EstudianteTO estudianteTO = this.estudianteService.buscarPorId(id);
+		/*
+		 * // HATEOAS P1. // consulto la lista de estudiantes con la capacidad del
+		 * service,y lo alamceno // en una lista List<MateriaTO> lista
+		 * =this.materiaService.buscarPorIdEstudiante(id); //seteo las materias al
+		 * estudiante estudianteTO.setMaterias(lista);
+		 */
+		// HATEOAS P2.
+		// consulto la lista de estudiantes con la capacidad del service,y lo alamceno
+		// en una lista
+		// HATEOAS PARTE 2 VAMOS A COMENTAR LA PARTE 1 PORQUE ESO NO SE DEBE HACER
+		// ESTO ES UNA CARGA EAGER(PA2)
+		/*
+		 * List<MateriaTO> lista = this.materiaService.buscarPorIdEstudiante(id);
+		 * //seteo las materias al estudiante estudianteTO.setMaterias(lista);
+		 */
+
+		// creamos el hipervinculo
+		Link myLink = linkTo(methodOn(EstudianteController.class).buscarMateriasPorIdEstudiante(id))
+				.withRel("sus materias");
+
+		Link myLink2 = linkTo(methodOn(EstudianteController.class).buscarPorId(id)).withSelfRel();
+		// agrego el hipervinculo
+		estudianteTO.add(myLink);
+		estudianteTO.add(myLink2);
+
+		// retorno el estudiante con las materias
+		return estudianteTO;
+	}
+
+	// HATEOAS PARTE 2 HIPERVICULOS
+	// ejemplo nos olvidamos de hateoas
+	// http://localhost:8080/API/v1.0/Matricula/estudiantes/7/materias GET
+	@GetMapping(path = "/{id}/materias", produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<MateriaTO> buscarMateriasPorIdEstudiante(@PathVariable Integer id) {
+		return this.materiaService.buscarPorIdEstudiante(id);
+	}
+
+	// TRAER TODOS LOS ESTUDIANTES CON SUS MATERIAS
+	// URL: http://localhost:8080/API/v1.0/Matricula/estudiantes/todos
+	@GetMapping("/todos")
+	public List<EstudianteTO> buscarTodosHateoas() {
+
+		// busco todos los estudiantes y los almaceno en una lista
+		List<EstudianteTO> lista = this.estudianteService.buscarTodosHateoas();
+
+		// con un for voy añadiendo el link a los estudiantes
+		for (EstudianteTO estudianteTO : lista) {
+			estudianteTO.add(
+					linkTo(methodOn(EstudianteController.class).buscarMateriasPorIdEstudiante(estudianteTO.getId()))
+							.withRel("sus materias"));
+		}
+
+		return lista;
+
 	}
 
 }
